@@ -10,7 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Optional: use your own Firebase file saved as a repo secret named GOOGLE_SERVICES_JSON
       - name: Use real google-services.json (if secret exists)
         env:
           GS: ${{ secrets.GOOGLE_SERVICES_JSON }}
@@ -22,11 +21,17 @@ jobs:
           distribution: temurin
           java-version: 8
 
-      - name: Install Android SDK 27 (uses JDK 17 only for sdkmanager)
+      - name: Install clean Android SDK 27
         run: |
+          SDK=$HOME/android-sdk
+          mkdir -p $SDK
           export JAVA_HOME="$JAVA_HOME_17_X64"
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-27" "build-tools;27.0.3"
+          SM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | $SM --sdk_root=$SDK --licenses > /dev/null || true
+          $SM --sdk_root=$SDK "platform-tools" "platforms;android-27" "build-tools;27.0.3"
+          echo "sdk.dir=$SDK" > local.properties
+          echo "ANDROID_HOME=$SDK" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$SDK" >> $GITHUB_ENV
         env:
           SKIP_JDK_VERSION_CHECK: "1"
 
