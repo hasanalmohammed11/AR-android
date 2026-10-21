@@ -40,7 +40,14 @@ jobs:
           gradle-version: 4.4
 
       - name: Build
-        run: gradle assembleProductionDebug --stacktrace
+        run: |
+          set -o pipefail
+          gradle assembleProductionDebug --console=plain 2>&1 | tee build.log
+
+      - name: Show error summary
+        if: failure()
+        run: |
+          grep -A12 "What went wrong" build.log || tail -40 build.log
 
       - uses: actions/upload-artifact@v4
         with:
