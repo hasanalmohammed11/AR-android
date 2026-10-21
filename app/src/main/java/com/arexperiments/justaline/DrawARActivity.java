@@ -238,6 +238,7 @@ public class DrawARActivity extends BaseActivity
 
         mSurfaceView = findViewById(R.id.surfaceview);
         mSurfaceView.setRendererCallbacks(this);
+            mSurfaceView.doSetup();
 
         mOverflowButton = findViewById(R.id.button_overflow_menu);
         mOverflowButton.setOnClickListener(this);
